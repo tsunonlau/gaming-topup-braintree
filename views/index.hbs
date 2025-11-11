@@ -1,0 +1,287 @@
+<!-- Hero Section -->
+<section class="hero">
+  <div class="container">
+    <h1 class="hero-title">🎮 Top Up Your Favorite Games</h1>
+    <p class="hero-subtitle">Fast, secure, and instant delivery</p>
+  </div>
+</section>
+
+<!-- Error/Success Messages -->
+{{#if error}}
+<div class="alert alert-error">
+  <i class="fas fa-exclamation-circle"></i>
+  <span>{{error}}</span>
+</div>
+{{/if}}
+
+{{#if message}}
+<div class="alert alert-success">
+  <i class="fas fa-check-circle"></i>
+  <span>{{message}}</span>
+</div>
+{{/if}}
+
+<!-- Payment Section (shown when showPayment is true) -->
+{{#if showPayment}}
+<section class="payment-section">
+  <div class="container">
+    <div class="payment-container">
+      
+      <!-- Order Summary -->
+      <div class="order-summary">
+        <h2>Order Summary</h2>
+        <div class="order-details">
+          <div class="game-info">
+            <span class="game-icon">{{orderDetails.gameIcon}}</span>
+            <div>
+              <h3>{{orderDetails.gameName}}</h3>
+              <p class="package-info">
+                {{#if orderDetails.package.diamonds}}
+                  {{orderDetails.package.diamonds}} Diamonds
+                  {{#if orderDetails.package.bonus}}
+                    + {{orderDetails.package.bonus}} Bonus
+                  {{/if}}
+                {{else if orderDetails.package.crystals}}
+                  {{orderDetails.package.crystals}} Genesis Crystals
+                  {{#if orderDetails.package.bonus}}
+                    + {{orderDetails.package.bonus}} Bonus
+                  {{/if}}
+                {{else if orderDetails.package.uc}}
+                  {{orderDetails.package.uc}} UC
+                  {{#if orderDetails.package.bonus}}
+                    + {{orderDetails.package.bonus}} Bonus
+                  {{/if}}
+                {{else if orderDetails.package.vp}}
+                  {{orderDetails.package.vp}} VP
+                  {{#if orderDetails.package.bonus}}
+                    + {{orderDetails.package.bonus}} Bonus
+                  {{/if}}
+                {{/if}}
+              </p>
+            </div>
+          </div>
+          <div class="order-info">
+            <div class="info-row">
+              <span>User ID:</span>
+              <span class="info-value">{{orderDetails.userId}}</span>
+            </div>
+            <div class="info-row">
+              <span>Package:</span>
+              <span class="info-value">{{orderDetails.packageId}}</span>
+            </div>
+            <div class="info-row total-row">
+              <span>Total Amount:</span>
+              <span class="info-value">${{orderDetails.totalAmount}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Form -->
+      <div class="payment-form">
+        <h2>Payment Details</h2>
+        <div id="dropin-container"></div>
+        <button id="submit-button" class="btn btn-primary btn-large">
+          <i class="fas fa-lock"></i> Complete Payment
+        </button>
+        <div id="checkout-message"></div>
+        <p class="security-note">
+          <i class="fas fa-shield-alt"></i>
+          Your payment is secured by Braintree
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Payment Script -->
+<script>
+(function() {
+  const submitButton = document.querySelector('#submit-button');
+  const checkoutMessage = document.querySelector('#checkout-message');
+  const loadingOverlay = document.querySelector('#loading-overlay');
+
+  // Initialize Braintree Drop-in UI
+  braintree.dropin.create({
+    authorization: '{{clientToken}}',
+    container: '#dropin-container',
+    card: {
+      cardholderName: {
+        required: true
+      }
+    }
+  }, function (createErr, instance) {
+    if (createErr) {
+      console.error('Error creating Drop-in:', createErr);
+      checkoutMessage.innerHTML = '<div class="alert alert-error">Error initializing payment form. Please refresh the page.</div>';
+      return;
+    }
+
+    // Handle payment submission
+    submitButton.addEventListener('click', function () {
+      submitButton.disabled = true;
+      
+      instance.requestPaymentMethod(function (err, payload) {
+        if (err) {
+          console.error('Error requesting payment method:', err);
+          checkoutMessage.innerHTML = '<div class="alert alert-error">Please complete all required fields.</div>';
+          submitButton.disabled = false;
+          return;
+        }
+
+        // Show loading spinner
+        loadingOverlay.style.display = 'flex';
+
+        // Send payment method nonce to server
+        fetch('/checkout', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            paymentMethodNonce: payload.nonce
+          })
+        })
+        .then(response => response.json())
+        .then(result => {
+          // Hide loading spinner
+          loadingOverlay.style.display = 'none';
+
+          if (result.success) {
+            // Tear down the Drop-in UI
+            instance.teardown(function (teardownErr) {
+              if (teardownErr) {
+                console.error('Error tearing down Drop-in:', teardownErr);
+              }
+            });
+
+            // Redirect to confirmation page
+            window.location.href = '/confirmation';
+          } else {
+            // Show error message
+            checkoutMessage.innerHTML = `<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> ${result.message}</div>`;
+            submitButton.disabled = false;
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          loadingOverlay.style.display = 'none';
+          checkoutMessage.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> An error occurred. Please try again.</div>';
+          submitButton.disabled = false;
+        });
+      });
+    });
+  });
+})();
+</script>
+
+{{else}}
+
+<!-- Game Selection Section (shown when showPayment is false) -->
+<section class="games-section" id="games">
+  <div class="container">
+    <h2 class="section-title">Select Your Game</h2>
+    
+    {{#each games}}
+    <div class="game-card">
+      <div class="game-header">
+        <span class="game-icon-large">{{this.icon}}</span>
+        <h3>{{this.name}}</h3>
+      </div>
+      
+      <form action="/select-package" method="POST" class="package-form">
+        <input type="hidden" name="gameId" value="{{@key}}">
+        
+        <div class="form-group">
+          <label for="userId-{{@key}}">
+            <i class="fas fa-user"></i> User ID / Game ID
+          </label>
+          <input 
+            type="text" 
+            id="userId-{{@key}}" 
+            name="userId" 
+            placeholder="Enter your game user ID" 
+            required
+            class="form-input"
+          >
+          <small class="form-help">You can find this in your game profile</small>
+        </div>
+
+        <div class="packages-grid">
+          {{#each this.packages}}
+          <label class="package-option">
+            <input 
+              type="radio" 
+              name="packageId" 
+              value="{{this.id}}" 
+              required
+            >
+            <div class="package-content">
+              <div class="package-amount">
+                {{#if this.diamonds}}
+                  {{this.diamonds}}
+                  <span class="package-unit">Diamonds</span>
+                {{else if this.crystals}}
+                  {{this.crystals}}
+                  <span class="package-unit">Crystals</span>
+                {{else if this.uc}}
+                  {{this.uc}}
+                  <span class="package-unit">UC</span>
+                {{else if this.vp}}
+                  {{this.vp}}
+                  <span class="package-unit">VP</span>
+                {{/if}}
+              </div>
+              {{#if this.bonus}}
+              <div class="package-bonus">
+                +{{this.bonus}} Bonus
+              </div>
+              {{/if}}
+              <div class="package-price">
+                ${{this.price}}
+              </div>
+            </div>
+          </label>
+          {{/each}}
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+          Continue to Payment <i class="fas fa-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+    {{/each}}
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="features-section">
+  <div class="container">
+    <h2 class="section-title">Why Choose Us?</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <i class="fas fa-bolt feature-icon"></i>
+        <h3>Instant Delivery</h3>
+        <p>Get your gaming credits instantly after payment</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-shield-alt feature-icon"></i>
+        <h3>Secure Payment</h3>
+        <p>Protected by Braintree's secure payment gateway</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-clock feature-icon"></i>
+        <h3>24/7 Support</h3>
+        <p>Our team is always here to help you</p>
+      </div>
+      <div class="feature-card">
+        <i class="fas fa-tag feature-icon"></i>
+        <h3>Best Prices</h3>
+        <p>Competitive prices with bonus rewards</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+{{/if}}

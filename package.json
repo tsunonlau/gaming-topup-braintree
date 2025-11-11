@@ -1,0 +1,33 @@
+{
+  "name": "gaming-topup-braintree",
+  "version": "1.0.0",
+  "description": "Gaming Top-up Website with Braintree Drop-in UI Integration",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "keywords": [
+    "gaming",
+    "topup",
+    "braintree",
+    "payment"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "hbs": "^4.2.0",
+    "braintree": "^3.18.0",
+    "dotenv": "^16.3.1",
+    "body-parser": "^1.20.2",
+    "express-session": "^1.17.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  }
+}

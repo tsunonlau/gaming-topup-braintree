@@ -1,0 +1,28 @@
+# ========================================
+# BRAINTREE CONFIGURATION
+# ========================================
+# Get these values from your Braintree Control Panel
+# Sandbox: https://sandbox.braintreegateway.com/
+# Production: https://www.braintreegateway.com/
+
+BRAINTREE_ENVIRONMENT=sandbox
+BRAINTREE_MERCHANT_ID=your_merchant_id_here
+BRAINTREE_PUBLIC_KEY=your_public_key_here
+BRAINTREE_PRIVATE_KEY=your_private_key_here
+
+# ========================================
+# APPLICATION CONFIGURATION
+# ========================================
+NODE_ENV=development
+PORT=3000
+
+# Session secret - CHANGE THIS IN PRODUCTION
+SESSION_SECRET=change-this-to-a-random-string-in-production
+
+# ========================================
+# INSTRUCTIONS
+# ========================================
+# 1. Copy this file to .env (remove .example extension)
+# 2. Fill in your actual Braintree credentials
+# 3. Never commit the .env file to version control
+# 4. For production, set BRAINTREE_ENVIRONMENT=production

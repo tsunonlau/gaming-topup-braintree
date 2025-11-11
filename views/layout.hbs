@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{title}} - Gaming Top-up Store</title>
+  
+  <!-- Braintree Drop-in UI SDK -->
+  <script src="https://js.braintreegateway.com/web/dropin/1.44.0/js/dropin.min.js"></script>
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/stylesheets/style.css">
+  
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="header">
+    <nav class="navbar">
+      <div class="container">
+        <a href="/" class="logo">
+          <i class="fas fa-gamepad"></i>
+          <span>Gaming Top-up Store</span>
+        </a>
+        <ul class="nav-links">
+          <li><a href="/">Home</a></li>
+          <li><a href="#games">Games</a></li>
+          <li><a href="#support">Support</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    {{{body}}}
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About Us</h3>
+          <p>Your trusted partner for gaming top-ups worldwide.</p>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="#games">Games</a></li>
+            <li><a href="#support">Support</a></li>
+            <li><a href="#terms">Terms of Service</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p><i class="fas fa-envelope"></i> support@gamingtopup.com</p>
+          <p><i class="fas fa-phone"></i> +1 (555) 123-4567</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Gaming Top-up Store. All rights reserved.</p>
+        <p>Powered by Braintree Payment Gateway</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Loading Spinner (hidden by default) -->
+  <div id="loading-overlay" class="loading-overlay" style="display: none;">
+    <div class="spinner-container">
+      <div class="spinner"></div>
+      <p class="loading-text">Processing your payment...</p>
+      <p class="loading-subtext">Please do not close this window</p>
+    </div>
+  </div>
+</body>
+</html>

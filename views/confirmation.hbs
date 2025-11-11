@@ -1,0 +1,172 @@
+<!-- Success Hero -->
+<section class="confirmation-hero">
+  <div class="container">
+    <div class="success-icon">
+      <i class="fas fa-check-circle"></i>
+    </div>
+    <h1 class="confirmation-title">Payment Successful!</h1>
+    <p class="confirmation-subtitle">Thank you for your purchase. Your gaming credits will be delivered instantly.</p>
+  </div>
+</section>
+
+<!-- Transaction Details -->
+<section class="confirmation-details">
+  <div class="container">
+    <div class="details-card">
+      
+      <!-- Transaction Information -->
+      <div class="detail-section">
+        <h2><i class="fas fa-receipt"></i> Transaction Details</h2>
+        <div class="detail-grid">
+          <div class="detail-item">
+            <span class="detail-label">Transaction ID:</span>
+            <span class="detail-value transaction-id">{{transaction.transactionId}}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Status:</span>
+            <span class="detail-value status-badge status-{{transaction.status}}">
+              {{transaction.status}}
+            </span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Date & Time:</span>
+            <span class="detail-value">{{transaction.createdAt}}</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Amount Paid:</span>
+            <span class="detail-value amount">
+              {{transaction.currencyIsoCode}} ${{transaction.amount}}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order Details -->
+      <div class="detail-section">
+        <h2><i class="fas fa-shopping-bag"></i> Order Details</h2>
+        <div class="order-info-card">
+          <div class="game-header">
+            <span class="game-icon-large">{{transaction.orderDetails.gameIcon}}</span>
+            <div>
+              <h3>{{transaction.orderDetails.gameName}}</h3>
+              <p class="package-id">Package: {{transaction.orderDetails.packageId}}</p>
+            </div>
+          </div>
+          
+          <div class="detail-grid">
+            <div class="detail-item">
+              <span class="detail-label">User ID:</span>
+              <span class="detail-value">{{transaction.orderDetails.userId}}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Package Details:</span>
+              <span class="detail-value">
+                {{#if transaction.orderDetails.package.diamonds}}
+                  {{transaction.orderDetails.package.diamonds}} Diamonds
+                  {{#if transaction.orderDetails.package.bonus}}
+                    + {{transaction.orderDetails.package.bonus}} Bonus
+                  {{/if}}
+                {{else if transaction.orderDetails.package.crystals}}
+                  {{transaction.orderDetails.package.crystals}} Genesis Crystals
+                  {{#if transaction.orderDetails.package.bonus}}
+                    + {{transaction.orderDetails.package.bonus}} Bonus
+                  {{/if}}
+                {{else if transaction.orderDetails.package.uc}}
+                  {{transaction.orderDetails.package.uc}} UC
+                  {{#if transaction.orderDetails.package.bonus}}
+                    + {{transaction.orderDetails.package.bonus}} Bonus
+                  {{/if}}
+                {{else if transaction.orderDetails.package.vp}}
+                  {{transaction.orderDetails.package.vp}} VP
+                  {{#if transaction.orderDetails.package.bonus}}
+                    + {{transaction.orderDetails.package.bonus}} Bonus
+                  {{/if}}
+                {{/if}}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Important Information -->
+      <div class="detail-section info-section">
+        <h2><i class="fas fa-info-circle"></i> Important Information</h2>
+        <ul class="info-list">
+          <li>
+            <i class="fas fa-clock"></i>
+            Your gaming credits will be delivered to your account within <strong>5-10 minutes</strong>
+          </li>
+          <li>
+            <i class="fas fa-envelope"></i>
+            A confirmation email has been sent to your registered email address
+          </li>
+          <li>
+            <i class="fas fa-file-invoice"></i>
+            Please save your transaction ID for future reference: 
+            <code class="transaction-code">{{transaction.transactionId}}</code>
+          </li>
+          <li>
+            <i class="fas fa-headset"></i>
+            If you don't receive your credits within 15 minutes, please contact our support team
+          </li>
+        </ul>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <a href="/" class="btn btn-primary">
+          <i class="fas fa-home"></i> Back to Home
+        </a>
+        <button onclick="window.print()" class="btn btn-secondary">
+          <i class="fas fa-print"></i> Print Receipt
+        </button>
+        <button onclick="copyTransactionId()" class="btn btn-secondary" id="copy-btn">
+          <i class="fas fa-copy"></i> Copy Transaction ID
+        </button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Customer Support Section -->
+<section class="support-section">
+  <div class="container">
+    <div class="support-card">
+      <i class="fas fa-headset support-icon"></i>
+      <h3>Need Help?</h3>
+      <p>Our customer support team is available 24/7 to assist you</p>
+      <div class="support-buttons">
+        <a href="mailto:support@gamingtopup.com" class="btn btn-outline">
+          <i class="fas fa-envelope"></i> Email Support
+        </a>
+        <a href="#" class="btn btn-outline">
+          <i class="fas fa-comments"></i> Live Chat
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Script for copying transaction ID -->
+<script>
+function copyTransactionId() {
+  const transactionId = '{{transaction.transactionId}}';
+  const copyBtn = document.getElementById('copy-btn');
+  
+  navigator.clipboard.writeText(transactionId).then(function() {
+    // Change button text temporarily
+    const originalHTML = copyBtn.innerHTML;
+    copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+    copyBtn.classList.add('btn-success');
+    
+    setTimeout(function() {
+      copyBtn.innerHTML = originalHTML;
+      copyBtn.classList.remove('btn-success');
+    }, 2000);
+  }).catch(function(err) {
+    console.error('Failed to copy:', err);
+    alert('Failed to copy transaction ID. Please copy it manually: ' + transactionId);
+  });
+}
+</script>

@@ -1,0 +1,65 @@
+<section class="error-section">
+  <div class="container">
+    <div class="error-card">
+      <i class="fas fa-exclamation-triangle error-icon"></i>
+      <h1>{{error.status}} - {{title}}</h1>
+      <p class="error-message">{{message}}</p>
+      
+      {{#if error.stack}}
+      <details class="error-details">
+        <summary>Error Details (Development Mode)</summary>
+        <pre>{{error.stack}}</pre>
+      </details>
+      {{/if}}
+      
+      <a href="/" class="btn btn-primary">
+        <i class="fas fa-home"></i> Back to Home
+      </a>
+    </div>
+  </div>
+</section>
+
+<style>
+.error-section {
+  padding: 4rem 0;
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+}
+
+.error-card {
+  background: white;
+  border-radius: 12px;
+  padding: 3rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.error-icon {
+  font-size: 4rem;
+  color: #ef4444;
+  margin-bottom: 1rem;
+}
+
+.error-message {
+  color: #6b7280;
+  margin: 1rem 0 2rem;
+}
+
+.error-details {
+  text-align: left;
+  margin: 2rem 0;
+  background: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.error-details pre {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-size: 0.875rem;
+  color: #ef4444;
+}
+</style>
