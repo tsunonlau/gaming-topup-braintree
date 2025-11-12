@@ -10,18 +10,19 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/test-gateway', async (req, res) => {
-  try {
+ if (process.env.NODE_ENV !== 'production') {
+    router.get('/test-gateway', async (req, res) => {
+      try {
 
-    const gateway = require('../config/braintree');
-    const result = await gateway.clientToken.generate({});
-    console.log("Attempt generating test Braintree Client Token");
-    res.json({ success: true, tokenPreview: result.clientToken.substring(0, 50) });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
+        const gateway = require('../config/braintree');
+        const result = await gateway.clientToken.generate({});
+        console.log("Attempt generating test Braintree Client Token");
+        res.json({ success: true, tokenPreview: result.clientToken.substring(0, 50) });
+      } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+      }
+    });
+ }
 
 // Gaming packages configuration
 // Add more games and packages as needed
@@ -144,7 +145,7 @@ router.post('/select-package', async (req, res) => {
       timestamp: new Date().toISOString()
     };
 
-    //console.log('Passing clientToken:', clientToken, typeof clientToken);
+    console.log('Passing clientToken:', clientToken, typeof clientToken);
 
     // Render payment page with Drop-in UI
     res.render('index', {

@@ -50,6 +50,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Add this before session middleware
+  if (process.env.NODE_ENV === 'production') {
+    app.set('trust proxy', 1);
+  }
+
 // Session configuration - stores transaction data between requests
 app.use(session({
   secret: process.env.SESSION_SECRET || 'gaming-topup-secret-key-change-in-production',
@@ -57,6 +62,8 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+    httpOnly: true, // added for render
+    sameSite: 'strict', // added for render
     maxAge: 1000 * 60 * 60 // 1 hour session timeout
   }
 }));
@@ -73,6 +80,14 @@ app.use('/checkout', checkoutRouter);
 
 // Confirmation page - displays transaction success details
 app.use('/confirmation', confirmationRouter);
+
+// Health check for Render
+  app.get('/health', (req, res) => {
+    res.status(200).json({
+      status: 'ok',
+      timestamp: new Date().toISOString()
+    });
+  });
 
 // ===========================
 // ERROR HANDLING
