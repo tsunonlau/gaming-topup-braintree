@@ -144,7 +144,7 @@ router.post('/select-package', async (req, res) => {
       timestamp: new Date().toISOString()
     };
 
-    console.log('Passing clientToken:', clientToken, typeof clientToken);
+    //console.log('Passing clientToken:', clientToken, typeof clientToken);
 
     // Render payment page with Drop-in UI
     res.render('index', {

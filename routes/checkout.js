@@ -28,16 +28,22 @@ const gateway = require('../config/braintree');
  */
 router.post('/', async (req, res) => {
   try {
+    console.log('🔄 Checkout route called');
+    console.log('Request body:', req.body);
+
     // Extract the payment method nonce from request
     const { paymentMethodNonce } = req.body;
 
     // Validate that nonce exists
     if (!paymentMethodNonce) {
+      console.log('❌ No payment method nonce provided');
       return res.status(400).json({
         success: false,
         message: 'Payment method nonce is required'
       });
     }
+
+    console.log('✅ Payment method nonce received:', paymentMethodNonce.substring(0, 20) + '...');
 
     // Retrieve order details from session
     const orderDetails = req.session.orderDetails;
@@ -56,6 +62,8 @@ router.post('/', async (req, res) => {
       userId: orderDetails.userId
     });
 
+    console.log('🏦 Creating Braintree transaction...');
+
     // Create the transaction with Braintree
     const transactionResult = await gateway.transaction.sale({
       // Amount to charge (must be a string)
@@ -70,16 +78,9 @@ router.post('/', async (req, res) => {
         // If false, you'll need to manually settle the transaction later
         submitForSettlement: true
       },
-      
-      // Custom fields to store additional data with the transaction
-      customFields: {
-        game_name: orderDetails.gameName,
-        package_id: orderDetails.packageId,
-        user_id: orderDetails.userId
-      },
-      
-      // Order ID for reference
-      orderId: `ORDER-${Date.now()}`
+
+      // Order ID for reference (including game info for tracking)
+      orderId: `ORDER-${orderDetails.gameName.replace(/\s+/g, '')}-${orderDetails.packageId}-${Date.now()}`
     });
 
     // Check if transaction was successful
