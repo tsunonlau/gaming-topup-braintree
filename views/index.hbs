@@ -104,13 +104,8 @@
 
   // Initialize Braintree Drop-in UI
   braintree.dropin.create({
-    authorization: '{{clientToken}}',
-    container: '#dropin-container',
-    card: {
-      cardholderName: {
-        required: true
-      }
-    }
+    authorization: '{{{clientToken}}}',
+    container: '#dropin-container'
   }, function (createErr, instance) {
     if (createErr) {
       console.error('Error creating Drop-in:', createErr);

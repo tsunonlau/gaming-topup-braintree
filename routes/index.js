@@ -9,7 +9,19 @@
 
 const express = require('express');
 const router = express.Router();
-const gateway = require('../config/braintree');
+
+router.get('/test-gateway', async (req, res) => {
+  try {
+
+    const gateway = require('../config/braintree');
+    const result = await gateway.clientToken.generate({});
+    console.log("Attempt generating test Braintree Client Token");
+    res.json({ success: true, tokenPreview: result.clientToken.substring(0, 50) });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 
 // Gaming packages configuration
 // Add more games and packages as needed
@@ -115,7 +127,10 @@ router.post('/select-package', async (req, res) => {
     }
 
     // Generate Braintree client token
-    const clientToken = await gateway.clientToken.generate({});
+    
+    const gateway = require('../config/braintree'); // (OK repeated - it's cached by Node)
+    const tokenResult = await gateway.clientToken.generate({});
+    const clientToken = tokenResult.clientToken;   // This is where a fresh new token is made
 
     // Store order details in session for checkout
     req.session.orderDetails = {
@@ -129,13 +144,16 @@ router.post('/select-package', async (req, res) => {
       timestamp: new Date().toISOString()
     };
 
+    console.log('Passing clientToken:', clientToken, typeof clientToken);
+
     // Render payment page with Drop-in UI
     res.render('index', {
       title: `Checkout - ${selectedGame.name}`,
       games: GAMING_PACKAGES,
       showPayment: true,
-      clientToken: clientToken.clientToken,
-      orderDetails: req.session.orderDetails
+      clientToken,
+      orderDetails: req.session.orderDetails,
+      error: null
     });
 
   } catch (error) {
